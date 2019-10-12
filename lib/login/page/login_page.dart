@@ -6,7 +6,6 @@ import 'package:flustars/flustars.dart' as FlutterStars;
 import 'package:flutter_deer/common/common.dart';
 import 'package:flutter_deer/res/resources.dart';
 import 'package:flutter_deer/routers/fluro_navigator.dart';
-import 'package:flutter_deer/store/store_router.dart';
 import 'package:flutter_deer/util/utils.dart';
 import 'package:flutter_deer/widgets/app_bar.dart';
 import 'package:flutter_deer/widgets/my_button.dart';
@@ -59,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
   
   void _login(){
     FlutterStars.SpUtil.putString(Constant.phone, _nameController.text);
-    NavigatorUtils.push(context, StoreRouter.auditPage);
+    // NavigatorUtils.push(context, StoreRouter.auditPage);
   }
   
   @override

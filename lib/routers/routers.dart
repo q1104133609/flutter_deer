@@ -7,13 +7,10 @@ import 'package:flutter_deer/routers/404.dart';
 import 'package:flutter_deer/login/login_router.dart';
 import 'package:flutter_deer/order/order_router.dart';
 import 'package:flutter_deer/routers/router_init.dart';
-import 'package:flutter_deer/setting/setting_router.dart';
 
 import 'package:flutter_deer/home/home_page.dart';
 import 'package:flutter_deer/home/webview_page.dart';
-import 'package:flutter_deer/shop/shop_router.dart';
 import 'package:flutter_deer/statistics/statistics_router.dart';
-import 'package:flutter_deer/store/store_router.dart';
 
 class Routes {
 
@@ -41,13 +38,10 @@ class Routes {
     
     _listRouter.clear();
     /// 各自路由由各自模块管理，统一在此添加初始化
-    _listRouter.add(ShopRouter());
     _listRouter.add(LoginRouter());
     _listRouter.add(GoodsRouter());
     _listRouter.add(OrderRouter());
-    _listRouter.add(StoreRouter());
     _listRouter.add(AccountRouter());
-    _listRouter.add(SettingRouter());
     _listRouter.add(StatisticsRouter());
   
     /// 初始化路由

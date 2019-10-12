@@ -1,15 +1,19 @@
+import 'dart:convert';
+import 'dart:core';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_deer/goods/page/goods_page.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_deer/home/provider/home_provider.dart';
-import 'package:flutter_deer/order/page/order_page.dart';
 import 'package:flutter_deer/res/resources.dart';
-import 'package:flutter_deer/shop/page/shop_page.dart';
-import 'package:flutter_deer/statistics/page/statistics_page.dart';
+import 'package:flutter_deer/util/map_utils.dart';
 import 'package:flutter_deer/util/toast.dart';
-import 'package:flutter_deer/util/utils.dart';
-import 'package:flutter_deer/widgets/load_image.dart';
+import 'package:flutter_deer/widgets/app_bar.dart';
+import 'package:flutter_deer/widgets/comment_title.dart';
+import 'package:flutter_deer/widgets/custom_tab.dart';
+import 'package:flutter_deer/widgets/data_item.dart';
+import 'package:flutter_deer/widgets/progress_item.dart';
 import 'package:provider/provider.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -17,154 +21,232 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
-  var _pageList;
-  
-  var _appBarTitles = ['订单', '商品', '统计', '店铺'];
-  final _pageController = PageController();
-
   HomeProvider provider = HomeProvider();
-
-  List<BottomNavigationBarItem> _list;
-  List<BottomNavigationBarItem> _listDark;
+  num noTab = 0;
+  WebViewController _controller;
 
   @override
   void initState() {
     super.initState();
-    initData();
-  }
-  
-  void initData(){
-    _pageList = [
-      OrderPage(),
-      GoodsPage(),
-      StatisticsPage(),
-      ShopPage(),
-    ];
   }
 
-  List<BottomNavigationBarItem> _buildBottomNavigationBarItem(){
-    if (_list == null){
-      var _tabImages = [
-        [
-          const LoadAssetImage("home/icon_order", width: 25.0, color: Colours.unselected_item_color,),
-          const LoadAssetImage("home/icon_order", width: 25.0, color: Colours.app_main,),
-        ],
-        [
-          const LoadAssetImage("home/icon_commodity", width: 25.0, color: Colours.unselected_item_color,),
-          const LoadAssetImage("home/icon_commodity", width: 25.0, color: Colours.app_main,),
-        ],
-        [
-          const LoadAssetImage("home/icon_statistics", width: 25.0, color: Colours.unselected_item_color,),
-          const LoadAssetImage("home/icon_statistics", width: 25.0, color: Colours.app_main,),
-        ],
-        [
-          const LoadAssetImage("home/icon_shop", width: 25.0, color: Colours.unselected_item_color,),
-          const LoadAssetImage("home/icon_shop", width: 25.0, color: Colours.app_main,),
-        ]
-      ];
-      _list = List.generate(4, (i){
-        return BottomNavigationBarItem(
-            icon: _tabImages[i][0],
-            activeIcon: _tabImages[i][1],
-            title: Padding(
-              padding: const EdgeInsets.only(top: 1.5),
-              child: Text(_appBarTitles[i], key: Key(_appBarTitles[i]),),
-            )
-        );
-      });
-    }
-    return _list;
-  }
+  DateTime _lastTime;
 
-  List<BottomNavigationBarItem> _buildDarkBottomNavigationBarItem(){
-    if (_listDark == null){
-      var _tabImagesDark = [
-        [
-          const LoadAssetImage("home/icon_order", width: 25.0),
-          const LoadAssetImage("home/icon_order", width: 25.0, color: Colours.dark_app_main,),
-        ],
-        [
-          const LoadAssetImage("home/icon_commodity", width: 25.0),
-          const LoadAssetImage("home/icon_commodity", width: 25.0, color: Colours.dark_app_main,),
-        ],
-        [
-          const LoadAssetImage("home/icon_statistics", width: 25.0),
-          const LoadAssetImage("home/icon_statistics", width: 25.0, color: Colours.dark_app_main,),
-        ],
-        [
-          const LoadAssetImage("home/icon_shop", width: 25.0),
-          const LoadAssetImage("home/icon_shop", width: 25.0, color: Colours.dark_app_main,),
-        ]
-      ];
-
-      _listDark = List.generate(4, (i){
-        return BottomNavigationBarItem(
-            icon: _tabImagesDark[i][0],
-            activeIcon: _tabImagesDark[i][1],
-            title: Padding(
-              padding: const EdgeInsets.only(top: 1.5),
-              child: Text(_appBarTitles[i], key: Key(_appBarTitles[i]),),
-            )
-        );
-      });
-    }
-    return _listDark;
-  }
-
-  DateTime  _lastTime;
-  
-  Future<bool> _isExit(){
-    if (_lastTime == null || DateTime.now().difference(_lastTime) > Duration(milliseconds: 2500)) {
+  Future<bool> _isExit() {
+    if (_lastTime == null ||
+        DateTime.now().difference(_lastTime) > Duration(milliseconds: 2500)) {
       _lastTime = DateTime.now();
       Toast.show("再次点击退出应用");
       return Future.value(false);
-    } 
+    }
     Toast.cancelToast();
     return Future.value(true);
   }
-  
+
+  Future<String> _getFile() async {
+    return await rootBundle.loadString('assets/map/echart.html');
+  }
+
+  void setMapData(String address) {
+    String mapJson = "";
+    if (address == "china") {
+      mapJson = address;
+    } else if (Map.cityList.containsKey(address)) {
+      mapJson = 'city/${Map.cityList[address]}';
+    } else if (Map.provinceList.containsKey(address)) {
+      mapJson = 'province/${Map.provinceList[address]}';
+    }
+    rootBundle.loadString('assets/map/$mapJson.json').then((value) {
+      print(value);
+      _controller
+          .evaluateJavascript('setValue("$mapJson",$value)')
+          .then((result) {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool isDark = Utils.isDark(context);
     return ChangeNotifierProvider<HomeProvider>(
-      builder: (_) => provider,
-      child: WillPopScope(
-        onWillPop: _isExit,
-        child: Scaffold(
-          bottomNavigationBar: Consumer<HomeProvider>(
-            builder: (_, provider, __){
-              return BottomNavigationBar(
-                backgroundColor: Utils.getBackgroundColor(context),
-                items: isDark ? _buildDarkBottomNavigationBarItem() : _buildBottomNavigationBarItem(),
-                type: BottomNavigationBarType.fixed,
-                currentIndex: provider.value,
-                elevation: 5.0,
-                iconSize: 21.0,
-                selectedFontSize: Dimens.font_sp10,
-                unselectedFontSize: Dimens.font_sp10,
-                selectedItemColor: Theme.of(context).primaryColor,
-                unselectedItemColor: isDark ? Colours.dark_unselected_item_color : Colours.unselected_item_color,
-                onTap: (index){
-                  _pageController.jumpToPage(index);
-                },
-              );
-            },
-          ),
-          // 使用PageView的原因参看 https://zhuanlan.zhihu.com/p/58582876
-          body: PageView(
-            controller: _pageController,
-            onPageChanged: _onPageChanged,
-            children: _pageList,
-            physics: NeverScrollableScrollPhysics(), // 禁止滑动
-          )
-        ),
+        builder: (_) => provider,
+        child: WillPopScope(
+            onWillPop: _isExit,
+            child: Scaffold(
+              appBar: MyAppBar(
+                isBack: false,
+                centerTitle: "英大财险风险地图",
+              ),
+              body: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      CustomTab(
+                        margin: EdgeInsets.only(top: 10),
+                        textList: ["已决", "全部"],
+                        onTabChange: (index) {
+                          setState(() {
+                            noTab = index;
+                          });
+                        },
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 20, bottom: 20),
+                        color: Colours.material_bg,
+                        child: FutureBuilder<String>(
+                            future: _getFile(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return WebView(
+                                  initialUrl: new Uri.dataFromString(
+                                          snapshot.data,
+                                          mimeType: 'text/html',
+                                          encoding: Encoding.getByName('utf-8'))
+                                      .toString(),
+                                  javascriptMode: JavascriptMode.unrestricted,
+                                  onWebViewCreated: (controller) {
+                                    this._controller = controller;
+                                  },
+                                  onPageFinished: (url) {
+                                    setMapData("china");
+                                  },
+                                );
+                              } else if (snapshot.hasError) {
+                                return Text("${snapshot.error}");
+                              }
+                              return CircularProgressIndicator();
+                            }),
+                        height: 200.0,
+                        width: double.infinity,
+                      ),
+                      Expanded(
+                          flex: 1,
+                          child: ListView(
+                            children: <Widget>[
+                              MaterialButton(
+                                  minWidth: double.infinity,
+                                  height: 44,
+                                  color: Colours.app_main,
+                                  shape: RoundedRectangleBorder(
+                                      side: BorderSide.none,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8))),
+                                  textColor: Colors.white,
+                                  child: Text("查询详情",
+                                      style: TextStyle(fontSize: 17)),
+                                  onPressed: () {}),
+                              getDataView(),
+                              getProgressView()
+                            ],
+                          ))
+                    ],
+                  )),
+            )));
+  }
+
+  Widget getProgressView() {
+    return Column(children: <Widget>[
+      MyTitle(
+        text: "详细数据",
       ),
-    );
+      ProgressItem(
+        title: "案件总量排名",
+        list: [{}, {}, {}, {}],
+        bgColor: Color(0x3300E9FF),
+        valueColor: Color(0xff00E9FF),
+      ),
+      ProgressItem(
+        title: "案件总金额排名",
+        list: [{}, {}, {}, {}],
+        bgColor: Color(0x330979E8),
+        valueColor: Color(0xff0979E8),
+      )
+    ]);
   }
 
-  void _onPageChanged(int index) {
-    provider.value = index;
+  Widget getDataView() {
+    return Column(children: <Widget>[
+      MyTitle(
+        text: "核心数据",
+      ),
+      DataItem(
+        title: "满期保费",
+        percentage: "2.12",
+        count: "14223",
+      ),
+      Row(
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: DataItem(
+              title: "全部损失总金额",
+              percentage: "2.12",
+              count: "14223",
+            ),
+          ),
+          Container(
+            width: 19,
+          ),
+          Expanded(
+            flex: 1,
+            child: DataItem(
+              title: "英大财险赔款总额",
+              percentage: "2.12",
+              count: "14223",
+            ),
+          )
+        ],
+      ),
+      Row(
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: DataItem(
+              title: "案件数量",
+              percentage: "2.12",
+              count: "14223",
+            ),
+          ),
+          Container(
+            width: 19,
+          ),
+          Expanded(
+            flex: 1,
+            child: DataItem(
+              title: "案均赔款",
+              percentage: "-2.12",
+              count: "14223",
+            ),
+          )
+        ],
+      ),
+      Row(
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: DataItem(
+              title: "满期赔付率",
+              percentage: "2.12",
+              count: "14223",
+            ),
+          ),
+          Container(
+            width: 19,
+          ),
+          Expanded(
+            flex: 1,
+            child: DataItem(
+              title: "出险报案周期",
+              percentage: "-2.12",
+              count: "14223",
+            ),
+          )
+        ],
+      ),
+      DataItem(
+        title: "报案结案周期",
+        percentage: "2.12",
+        count: "14223",
+      ),
+    ]);
   }
-
 }

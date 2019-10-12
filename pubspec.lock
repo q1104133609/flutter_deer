@@ -134,15 +134,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_2d_amap:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "8086ae658f19b45f1fd32a46e677f3abc4051a19"
-      url: "https://github.com/simplezhli/flutter_2d_amap.git"
-    source: git
-    version: "0.0.1"
   flutter_cache_manager:
     dependency: transitive
     description:

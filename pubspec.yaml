@@ -1,5 +1,5 @@
 name: flutter_deer
-description: Flutter Deer
+description: 英大财险风险看板
 
 version: 1.0.6
 author: 唯鹿 <a05111993@163.com>
@@ -14,7 +14,6 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
- 
   # Toast插件 https://github.com/OpenFlutter/flutter_oktoast
   oktoast: ^2.2.0
   # 网络库 https://github.com/flutterchina/dio
@@ -55,10 +54,10 @@ dependencies:
   sprintf: ^4.0.2
   # 状态管理 https://github.com/rrousselGit/provider
   provider: ^3.1.0
-  # 高德2D地图插件 https://github.com/simplezhli/flutter_2d_amap
-  flutter_2d_amap:
-    git:
-      url: https://github.com/simplezhli/flutter_2d_amap.git
+  # # 高德2D地图插件 https://github.com/simplezhli/flutter_2d_amap
+  # flutter_2d_amap:
+  #   git:
+  #     url: https://github.com/simplezhli/flutter_2d_amap.git
   # 扫码 https://github.com/apptreesoftware/flutter_barcode_reader
   barcode_scan:
     git:
@@ -98,6 +97,9 @@ flutter:
     - assets/images/shop/
     - assets/images/account/
     - assets/images/statistic/
+    - assets/map/
+    - assets/map/city/
+    - assets/map/province/
     
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
