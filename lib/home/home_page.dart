@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'dart:core';
+import 'dart:core' as prefix0;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_deer/home/provider/home_provider.dart';
+import 'package:flutter_deer/home/select_page.dart';
 import 'package:flutter_deer/res/resources.dart';
+import 'package:flutter_deer/util/app_navigator.dart';
 import 'package:flutter_deer/util/map_utils.dart';
 import 'package:flutter_deer/util/toast.dart';
 import 'package:flutter_deer/widgets/app_bar.dart';
@@ -25,7 +28,7 @@ class _HomeState extends State<Home> {
   HomeProvider provider = HomeProvider();
   num noTab = 0;
   WebViewController _controller;
-
+  String address = 'china';
   @override
   void initState() {
     super.initState();
@@ -124,6 +127,7 @@ class _HomeState extends State<Home> {
                             children: <Widget>[
                               ChooseCity(
                                 chooseAddress: (address) {
+                                  this.address = address;
                                   setMapData(address.replaceAll('省', ''));
                                 },
                               ),
@@ -138,7 +142,9 @@ class _HomeState extends State<Home> {
                                   textColor: Colors.white,
                                   child: Text("查询详情",
                                       style: TextStyle(fontSize: 17)),
-                                  onPressed: () {}),
+                                  onPressed: () {
+                                    AppNavigator.push(context, SelecePage(address: address));
+                                  }),
                               getDataView(),
                               getProgressView()
                             ],

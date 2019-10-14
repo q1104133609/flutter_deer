@@ -1,10 +1,10 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter_deer/net/net.dart';
-import 'package:flutter_deer/shop/models/user_entity.dart';
 import 'package:test/test.dart';
 
 void main(){
+  
   group('dio_test', (){
     Dio dio;
     setUp((){
@@ -14,7 +14,7 @@ void main(){
     });
     
     test('getUsers', () async {
-      await DioUtils.instance.requestNetwork<UserEntity>(
+      await DioUtils.instance.requestNetwork<dynamic>(
         Method.get, HttpApi.users, 
         onSuccess: (data){
           expect(data.name, "唯鹿");
