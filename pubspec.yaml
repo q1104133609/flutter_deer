@@ -16,6 +16,7 @@ dependencies:
     sdk: flutter
   # Toast插件 https://github.com/OpenFlutter/flutter_oktoast
   oktoast: ^2.2.0
+  city_pickers: ^0.1.27
   # 网络库 https://github.com/flutterchina/dio
   dio: ^3.0.3
   # https://github.com/ReactiveX/rxdart
@@ -59,9 +60,9 @@ dependencies:
   #   git:
   #     url: https://github.com/simplezhli/flutter_2d_amap.git
   # 扫码 https://github.com/apptreesoftware/flutter_barcode_reader
-  barcode_scan:
-    git:
-      url: https://github.com/simplezhli/flutter_barcode_reader.git
+  # barcode_scan:
+  #   git:
+  #     url: https://github.com/simplezhli/flutter_barcode_reader.git
   
 dev_dependencies:
   # Widget测试
@@ -99,6 +100,7 @@ flutter:
     - assets/images/statistic/
     - assets/map/
     - assets/map/city/
+    - assets/map/echars.min.js
     - assets/map/province/
     
   # To add custom fonts to your application, add a fonts section here,

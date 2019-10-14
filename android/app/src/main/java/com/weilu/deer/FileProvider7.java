@@ -7,7 +7,7 @@ import android.os.Build;
 
 import java.io.File;
 
-import androidx.core.content.FileProvider;
+//import androidx.core.content.FileProvider;
 
 /**
  * @author weilu
@@ -27,11 +27,11 @@ public class FileProvider7 {
     }
 
     private static Uri getUriForFile24(Context context, File file) {
-        return FileProvider.getUriForFile(context, context.getPackageName() + ".Merchant", file);
+        return null;
     }
 
     public static void setIntentDataAndType(Context context, Intent intent, String type, File file, boolean writeAble) {
-        
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.setDataAndType(getUriForFile(context, file), type);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -42,9 +42,9 @@ public class FileProvider7 {
             intent.setDataAndType(Uri.fromFile(file), type);
         }
     }
-    
+
     public static void setIntentData(Context context, Intent intent, File file, boolean writeAble) {
-        
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.setData(getUriForFile(context, file));
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);

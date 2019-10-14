@@ -8,6 +8,7 @@ import 'package:flutter_deer/res/resources.dart';
 import 'package:flutter_deer/util/map_utils.dart';
 import 'package:flutter_deer/util/toast.dart';
 import 'package:flutter_deer/widgets/app_bar.dart';
+import 'package:flutter_deer/widgets/choose_city.dart';
 import 'package:flutter_deer/widgets/comment_title.dart';
 import 'package:flutter_deer/widgets/custom_tab.dart';
 import 'package:flutter_deer/widgets/data_item.dart';
@@ -57,7 +58,6 @@ class _HomeState extends State<Home> {
       mapJson = 'province/${Map.provinceList[address]}';
     }
     rootBundle.loadString('assets/map/$mapJson.json').then((value) {
-      print(value);
       _controller
           .evaluateJavascript('setValue("$mapJson",$value)')
           .then((result) {});
@@ -90,7 +90,7 @@ class _HomeState extends State<Home> {
                         },
                       ),
                       Container(
-                        margin: EdgeInsets.only(top: 20, bottom: 20),
+                        margin: EdgeInsets.only(top: 20, bottom: 10),
                         color: Colours.material_bg,
                         child: FutureBuilder<String>(
                             future: _getFile(),
@@ -122,6 +122,11 @@ class _HomeState extends State<Home> {
                           flex: 1,
                           child: ListView(
                             children: <Widget>[
+                              ChooseCity(
+                                chooseAddress: (address) {
+                                  setMapData(address.replaceAll('省', ''));
+                                },
+                              ),
                               MaterialButton(
                                   minWidth: double.infinity,
                                   height: 44,

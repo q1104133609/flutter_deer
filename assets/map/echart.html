@@ -46,18 +46,14 @@
             }
         }
     </style>
-    <!-- <script src="fill:////assets/map/echars.min.js"></script> -->
-    <!-- <script src="echars.min.js"></script> -->
-    <!-- <script src="./echars.min.js"></script> -->
     <script src="https://cdn.bootcss.com/echarts/4.1.0/echarts.min.js"></script>
 </head>
 
 <body>
     <div id="main"></div>
     <script>
-
         var myChart = echarts.init(document.getElementById("main"));
-         function setValue(address, addressData) {
+         function setValue(address,addressData) {
             var data = addressData
             var d = []
             for (var i = 0; i < data.features.length; i++) {
@@ -70,9 +66,9 @@
                 title: {
                     show: false,
                 },
-                animationDuration: 1000,
-                animationEasing: 'cubicOut',
-                animationDurationUpdate: 1000,
+                // animationDuration: 1000,
+                // animationEasing: 'cubicIn',
+                // animationDurationUpdate: 1000,
                 //地理坐标系组件。
                 geo: {
                     map: address,
@@ -80,14 +76,10 @@
                     //标题颜色
                     label: {
                         normal: {
-                            show: true,
-                            color: '#fff',
-                            fontSize: '8'
+                            show: false,
                         },
                         emphasis: {
                             show: false,
-                            color: '#fff',
-                            fontSize: '8'
                         }
                     },
                     //地图区域的多边形 图形样式，

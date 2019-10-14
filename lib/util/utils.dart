@@ -1,5 +1,4 @@
 
-import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_deer/res/resources.dart';
@@ -21,15 +20,15 @@ class Utils {
 
   /// 调起二维码扫描页
   static Future<String> scan() async {
-    try {
-      return await BarcodeScanner.scan();
-    } catch (e) {
-      if (e is PlatformException){
-        if (e.code == BarcodeScanner.CameraAccessDenied) {
-          Toast.show("没有相机权限！");
-        }
-      }
-    }
+    // try {
+    //   return await BarcodeScanner.scan();
+    // } catch (e) {
+    //   if (e is PlatformException){
+    //     if (e.code == BarcodeScanner.CameraAccessDenied) {
+    //       Toast.show("没有相机权限！");
+    //     }
+    //   }
+    // }
     return null;
   }
 
