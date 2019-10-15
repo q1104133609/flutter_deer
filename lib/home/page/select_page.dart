@@ -20,7 +20,7 @@ class SelecePage extends StatefulWidget {
 }
 
 class SelecePageState extends State<SelecePage> {
-  var noTab = 1;
+  var checkTab = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +34,7 @@ class SelecePageState extends State<SelecePage> {
                 textList: ['已决', '全部'],
                 onTabChange: (index) {
                   setState(() {
-                    noTab = index;
+                    checkTab = index;
                   });
                 },
               ),
@@ -59,27 +59,33 @@ class SelecePageState extends State<SelecePage> {
                         )
                       ],
                     ),
-                    Gaps.vGap16,
                     CommentItem(title: '保单号', hint: '填写保单号', isInput: true),
                     CommentItem(
                         title: '起保日期', hint: '日期选择', onChooseTime: (date) {}),
                     CommentItem(
                         title: '终保日期', hint: '日期选择', onChooseTime: (date) {}),
-                    CommentItem(
-                        title: '联共保问题',
-                        hint: '请选择',
-                        onChooseList: (value) {},
-                        values: ['选择一', '选择2']),
-                    CommentItem(
-                        title: '业务标识',
-                        hint: '请选择',
-                        onChooseList: (value) {},
-                        values: ['选择一', '选择2']),
-                    CommentItem(
-                        title: '险类',
-                        hint: '请选择',
-                        onChooseList: (value) {},
-                        values: ['选择一', '选择2']),
+                    Visibility(
+                      visible: checkTab == 0,
+                      child: Column(
+                        children: <Widget>[
+                          CommentItem(
+                              title: '联共保问题',
+                              hint: '请选择',
+                              onChooseList: (value) {},
+                              values: ['选择一', '选择2']),
+                          CommentItem(
+                              title: '业务标识',
+                              hint: '请选择',
+                              onChooseList: (value) {},
+                              values: ['选择一', '选择2']),
+                          CommentItem(
+                              title: '险类',
+                              hint: '请选择',
+                              onChooseList: (value) {},
+                              values: ['选择一', '选择2']),
+                        ],
+                      ),
+                    ),
                     CommentItem(
                         title: '险种',
                         hint: '请选择',
@@ -89,13 +95,22 @@ class SelecePageState extends State<SelecePage> {
                         title: '出险日期', hint: '日期选择', onChooseTime: (date) {}),
                     CommentItem(
                         title: '报案日期', hint: '日期选择', onChooseTime: (date) {}),
-                    CommentItem(
-                        title: '结案日期', hint: '日期选择', onChooseTime: (date) {}),
-                    CommentItem(
-                        title: '案件状态',
-                        hint: '请选择',
-                        onChooseList: (value) {},
-                        values: ['选择一', '选择2']),
+                    Visibility(
+                      visible: checkTab == 0,
+                      child: Column(
+                        children: <Widget>[
+                          CommentItem(
+                              title: '结案日期',
+                              hint: '日期选择',
+                              onChooseTime: (date) {}),
+                          CommentItem(
+                              title: '案件状态',
+                              hint: '请选择',
+                              onChooseList: (value) {},
+                              values: ['选择一', '选择2']),
+                        ],
+                      ),
+                    ),
                     CommentItem(
                         title: '出险原因',
                         hint: '请选择',

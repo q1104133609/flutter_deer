@@ -5,7 +5,7 @@ import 'dart:core' as prefix0;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_deer/home/provider/home_provider.dart';
-import 'package:flutter_deer/home/select_page.dart';
+import 'package:flutter_deer/home/page/select_page.dart';
 import 'package:flutter_deer/res/resources.dart';
 import 'package:flutter_deer/util/app_navigator.dart';
 import 'package:flutter_deer/util/map_utils.dart';

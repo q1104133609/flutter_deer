@@ -7,8 +7,8 @@ import 'package:flutter_deer/routers/404.dart';
 import 'package:flutter_deer/login/login_router.dart';
 import 'package:flutter_deer/routers/router_init.dart';
 
-import 'package:flutter_deer/home/home_page.dart';
-import 'package:flutter_deer/home/webview_page.dart';
+import 'package:flutter_deer/home/page/home_page.dart';
+import 'package:flutter_deer/home/page/webview_page.dart';
 
 class Routes {
 
