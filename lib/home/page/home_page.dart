@@ -1,23 +1,21 @@
-import 'dart:convert';
 import 'dart:core';
 import 'dart:core' as prefix0;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_deer/home/provider/home_provider.dart';
 import 'package:flutter_deer/home/page/select_page.dart';
 import 'package:flutter_deer/res/resources.dart';
 import 'package:flutter_deer/util/app_navigator.dart';
-import 'package:flutter_deer/util/map_utils.dart';
+
 import 'package:flutter_deer/util/toast.dart';
 import 'package:flutter_deer/widgets/app_bar.dart';
 import 'package:flutter_deer/widgets/choose_city.dart';
 import 'package:flutter_deer/widgets/comment_title.dart';
 import 'package:flutter_deer/widgets/custom_tab.dart';
 import 'package:flutter_deer/widgets/data_item.dart';
+import 'package:flutter_deer/widgets/map_view.dart';
 import 'package:flutter_deer/widgets/progress_item.dart';
 import 'package:provider/provider.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -27,12 +25,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   HomeProvider provider = HomeProvider();
   num noTab = 0;
-  WebViewController _controller;
   String address = 'china';
-  @override
-  void initState() {
-    super.initState();
-  }
 
   DateTime _lastTime;
 
@@ -45,26 +38,6 @@ class _HomeState extends State<Home> {
     }
     Toast.cancelToast();
     return Future.value(true);
-  }
-
-  Future<String> _getFile() async {
-    return await rootBundle.loadString('assets/map/echart.html');
-  }
-
-  void setMapData(String address) {
-    String mapJson = "";
-    if (address == "china") {
-      mapJson = address;
-    } else if (Map.cityList.containsKey(address)) {
-      mapJson = 'city/${Map.cityList[address]}';
-    } else if (Map.provinceList.containsKey(address)) {
-      mapJson = 'province/${Map.provinceList[address]}';
-    }
-    rootBundle.loadString('assets/map/$mapJson.json').then((value) {
-      _controller
-          .evaluateJavascript('setValue("$mapJson",$value)')
-          .then((result) {});
-    });
   }
 
   @override
@@ -95,29 +68,7 @@ class _HomeState extends State<Home> {
                       Container(
                         margin: EdgeInsets.only(top: 20, bottom: 10),
                         color: Colours.material_bg,
-                        child: FutureBuilder<String>(
-                            future: _getFile(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return WebView(
-                                  initialUrl: new Uri.dataFromString(
-                                          snapshot.data,
-                                          mimeType: 'text/html',
-                                          encoding: Encoding.getByName('utf-8'))
-                                      .toString(),
-                                  javascriptMode: JavascriptMode.unrestricted,
-                                  onWebViewCreated: (controller) {
-                                    this._controller = controller;
-                                  },
-                                  onPageFinished: (url) {
-                                    setMapData("china");
-                                  },
-                                );
-                              } else if (snapshot.hasError) {
-                                return Text("${snapshot.error}");
-                              }
-                              return CircularProgressIndicator();
-                            }),
+                        child: MapView(address: address),
                         height: 200.0,
                         width: double.infinity,
                       ),
@@ -126,9 +77,11 @@ class _HomeState extends State<Home> {
                           child: ListView(
                             children: <Widget>[
                               ChooseCity(
-                                chooseAddress: (address) {
-                                  this.address = address;
-                                  setMapData(address.replaceAll('省', ''));
+                                chooseAddress: (chooseAddress) {
+                                  setState(() {
+                                    address = chooseAddress;
+                                  });
+                                  // setMapData(address.replaceAll('省', ''));
                                 },
                               ),
                               MaterialButton(
@@ -143,7 +96,8 @@ class _HomeState extends State<Home> {
                                   child: Text("查询详情",
                                       style: TextStyle(fontSize: 17)),
                                   onPressed: () {
-                                    AppNavigator.push(context, SelecePage(address: address));
+                                    AppNavigator.push(
+                                        context, SelecePage(address: address));
                                   }),
                               getDataView(),
                               getProgressView()
