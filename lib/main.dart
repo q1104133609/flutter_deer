@@ -4,7 +4,7 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_deer/home/home_page.dart';
+import 'package:flutter_deer/home/page/home_page.dart';
 import 'package:flutter_deer/provider/theme_provider.dart';
 import 'package:flutter_deer/routers/application.dart';
 import 'package:flutter_deer/routers/routers.dart';
