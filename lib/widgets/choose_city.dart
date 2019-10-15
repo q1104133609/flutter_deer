@@ -53,6 +53,9 @@ class _ChooseCity extends State<ChooseCity> {
               showType: address == CityEnum.C
                   ? ShowType.c
                   : address == CityEnum.P ? ShowType.p : ShowType.a);
+          if (result == null) {
+            return;
+          }
           if (address == CityEnum.P) {
             setState(() {
               pResult = result;

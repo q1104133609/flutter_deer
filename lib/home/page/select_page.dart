@@ -23,7 +23,6 @@ class SelecePageState extends State<SelecePage> {
   var checkTab = 0;
   @override
   Widget build(BuildContext context) {
-    print(checkTab);
     return Scaffold(
         appBar: MyAppBar(centerTitle: '查询条件'),
         body: Padding(
