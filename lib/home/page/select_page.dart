@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_deer/home/home_router.dart';
 import 'package:flutter_deer/res/colors.dart';
 import 'package:flutter_deer/res/gaps.dart';
 import 'package:flutter_deer/res/styles.dart';
+import 'package:flutter_deer/routers/fluro_navigator.dart';
 import 'package:flutter_deer/widgets/app_bar.dart';
 import 'package:flutter_deer/widgets/custom_tab.dart';
 import 'package:flutter_deer/widgets/item_time_picker.dart';
@@ -126,7 +128,9 @@ class SelecePageState extends State<SelecePage> {
                     Gaps.vGap16,
                     MyButton(
                       text: '查询详情',
-                      onPressed: () {},
+                      onPressed: () {
+                        NavigatorUtils.push(context, HomeRouter.homeDetail);
+                      },
                     )
                   ],
                 ),

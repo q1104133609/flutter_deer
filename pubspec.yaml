@@ -91,16 +91,8 @@ flutter:
   assets:
     - assets/data/
     - assets/images/
-    - assets/images/home/
-    - assets/images/store/
-    - assets/images/state/
-    - assets/images/order/
-    - assets/images/order/dark/
     - assets/images/login/
     - assets/images/goods/
-    - assets/images/shop/
-    - assets/images/account/
-    - assets/images/statistic/
     - assets/map/
     - assets/map/city/
     - assets/map/echars.min.js
