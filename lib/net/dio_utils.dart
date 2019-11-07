@@ -36,7 +36,7 @@ class DioUtils {
         // 不使用http状态码判断状态，使用AdapterInterceptor来处理（适用于标准REST风格）
         return true;
       },
-      baseUrl: "https://api.github.com/",
+      baseUrl: "http://129.204.178.29:9527/api/",
 //      contentType: ContentType('application', 'x-www-form-urlencoded', charset: 'utf-8'),
     );
     _dio = Dio(options);
@@ -53,7 +53,7 @@ class DioUtils {
     /// 统一添加身份验证请求头
     _dio.interceptors.add(AuthInterceptor());
     /// 刷新Token
-    _dio.interceptors.add(TokenInterceptor());
+    // _dio.interceptors.add(TokenInterceptor());
     /// 打印Log(生产模式去除)
     if (!Constant.inProduction){
       _dio.interceptors.add(LoggingInterceptor());

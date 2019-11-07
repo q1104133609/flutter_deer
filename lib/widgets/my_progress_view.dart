@@ -14,7 +14,7 @@ class MyProgressView extends StatelessWidget {
       : super();
   final String title;
   final String count;
-  final num percentage;
+  final double percentage;
   final Color bgColor;
   final Color valueColor;
   final double top;
@@ -36,7 +36,7 @@ class MyProgressView extends StatelessWidget {
               flex: 1,
               child: Container(
                 height: 10,
-                width: double.infinity ,
+                width: double.infinity,
                 padding: progressHorizontal == null
                     ? EdgeInsets.symmetric(horizontal: 16)
                     : progressHorizontal,
@@ -53,7 +53,11 @@ class MyProgressView extends StatelessWidget {
                           new AlwaysStoppedAnimation<Color>(this.valueColor),
                     )),
               )),
-          Text(count, style: TextStyle(color: Colors.white, fontSize: 16)),
+          Container(
+              width: 70,
+              alignment: Alignment.centerRight,
+              child: Text(count,
+                  style: TextStyle(color: Colors.white, fontSize: 16),maxLines: 1,overflow: TextOverflow.ellipsis,))
         ],
       ),
     );

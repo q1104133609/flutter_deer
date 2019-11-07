@@ -8,7 +8,6 @@ import 'package:flutter_deer/common/common.dart';
 import 'package:flutter_deer/util/log_utils.dart';
 import 'package:sprintf/sprintf.dart';
 
-import 'dio_utils.dart';
 import 'error_handle.dart';
 
 class AuthInterceptor extends Interceptor{
@@ -20,61 +19,6 @@ class AuthInterceptor extends Interceptor{
     }
    
     return super.onRequest(options);
-  }
-}
-
-class TokenInterceptor extends Interceptor{
-
-  Future<String> getToken() async {
-
-    Map<String, String> params = Map();
-    params["refresh_token"] = SpUtil.getString(Constant.refresh_Token);
-    try{
-      _tokenDio.options = DioUtils.instance.getDio().options;
-      var response = await _tokenDio.post("lgn/refreshToken", data: params);
-      if (response.statusCode == ExceptionHandle.success){
-        return json.decode(response.data.toString())["access_token"];
-      }
-    }catch(e){
-      Log.e("刷新Token失败！");
-    }
-    return null;
-  }
-
-  Dio _tokenDio = Dio();
-
-  @override
-  onResponse(Response response) async{
-    //401代表token过期
-    if (response != null && response.statusCode == ExceptionHandle.unauthorized) {
-      Log.d("-----------自动刷新Token------------");
-      Dio dio = DioUtils.instance.getDio();
-      dio.interceptors.requestLock.lock();
-      String accessToken = await getToken(); // 获取新的accessToken
-      Log.e("-----------NewToken: $accessToken ------------");
-      SpUtil.putString(Constant.access_Token, accessToken);
-      dio.interceptors.requestLock.unlock();
-
-      if (accessToken != null){{
-        // 重新请求失败接口
-        var request = response.request;
-        request.headers["Authorization"] = "Bearer $accessToken";
-        try {
-          Log.e("----------- 重新请求接口 ------------");
-          /// 避免重复执行拦截器，使用tokenDio
-          var response = await _tokenDio.request(request.path,
-              data: request.data,
-              queryParameters: request.queryParameters,
-              cancelToken: request.cancelToken,
-              options: request,
-              onReceiveProgress: request.onReceiveProgress);
-          return response;
-        } on DioError catch (e) {
-          return e;
-        }
-      }}
-    }
-    return super.onResponse(response);
   }
 }
 

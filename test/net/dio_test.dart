@@ -13,16 +13,6 @@ void main(){
       dio.options.baseUrl = "https://api.github.com/";
     });
     
-    test('getUsers', () async {
-      await DioUtils.instance.requestNetwork<dynamic>(
-        Method.get, HttpApi.users, 
-        onSuccess: (data){
-          expect(data.name, "唯鹿");
-        },
-        onError: (_, __){
-          print("$_, $__");
-        }
-      );
-    });
+   
   });
 }

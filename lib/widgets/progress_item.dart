@@ -11,7 +11,7 @@ class ProgressItem extends StatelessWidget {
   }) : super();
 
   final String title;
-  final List<Object> list;
+  final List<dynamic> list;
   final Color bgColor;
   final Color valueColor;
 
@@ -40,11 +40,13 @@ class ProgressItem extends StatelessWidget {
 
   List<Widget> getList() {
     List<Widget> mylist = [];
+    var max = 0.0;
+    list.forEach((v) => {if (max < v['value']) max = v['value'].toDouble()});
     list.forEach((v) => {
           mylist.add(MyProgressView(
-              title: "险类1",
-              percentage: 50,
-              count: "413",
+              title: '${v['key']}',
+              percentage: (v['value'] / max) * 100,
+              count: '${v['value']}',
               bgColor: bgColor,
               valueColor: valueColor))
         });

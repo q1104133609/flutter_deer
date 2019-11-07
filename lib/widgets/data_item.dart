@@ -37,7 +37,9 @@ class DataItem extends StatelessWidget {
                           "%",
                       style: TextStyle(color: Colors.white, fontSize: 12)),
                   decoration: new BoxDecoration(
-                    color: double.parse(percentage)>0?Color(0xff255BD1):Color(0xff239131),
+                    color: double.parse(percentage) > 0
+                        ? Color(0xff255BD1)
+                        : Color(0xff239131),
                     //设置四周圆角 角度
                     borderRadius: BorderRadius.all(Radius.circular(6.0)),
                   ),
@@ -47,7 +49,7 @@ class DataItem extends StatelessWidget {
             Container(
                 margin: EdgeInsets.only(top: 8),
                 alignment: Alignment.centerLeft,
-                child: Text(count,
+                child: Text(count == 'null' ? '-' : count,
                     style: TextStyle(color: Colors.white, fontSize: 30))),
           ],
         ));

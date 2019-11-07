@@ -2,8 +2,10 @@ import 'dart:core';
 import 'dart:core' as prefix0;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_deer/home/presenter/home_presenter.dart';
 import 'package:flutter_deer/home/provider/home_provider.dart';
 import 'package:flutter_deer/home/page/select_page.dart';
+import 'package:flutter_deer/mvp/base_page_state.dart';
 import 'package:flutter_deer/res/resources.dart';
 import 'package:flutter_deer/util/app_navigator.dart';
 
@@ -19,15 +21,210 @@ import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   @override
-  _HomeState createState() => _HomeState();
+  HomeState createState() => HomeState();
 }
 
-class _HomeState extends State<Home> {
+class HomeState extends BasePageState<Home, HomePresneter> {
   HomeProvider provider = HomeProvider();
   num noTab = 0;
   String address = 'china';
-
   DateTime _lastTime;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      presenter.getIndex(noTab);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider<HomeProvider>(
+        builder: (_) => provider,
+        child: Consumer<HomeProvider>(builder: (_, provider, __) {
+          return WillPopScope(
+              onWillPop: _isExit,
+              child: Scaffold(
+                appBar: MyAppBar(
+                  isBack: false,
+                  centerTitle: "英大财险风险地图",
+                ),
+                body: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        CustomTab(
+                          margin: EdgeInsets.only(top: 10),
+                          textList: ["已决", "全部"],
+                          onTabChange: (index) {
+                            presenter.getIndex(index);
+                            setState(() {
+                              noTab = index;
+                            });
+                          },
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 20, bottom: 10),
+                          color: Colours.material_bg,
+                          child: MapView(address: address),
+                          height: 200.0,
+                          width: double.infinity,
+                        ),
+                        Expanded(
+                            flex: 1,
+                            child: ListView(
+                              children: <Widget>[
+                                ChooseCity(
+                                  chooseAddress: (chooseAddress) {
+                                    setState(() {
+                                      address = chooseAddress;
+                                    });
+                                    // setMapData(address.replaceAll('省', ''));
+                                  },
+                                ),
+                                MaterialButton(
+                                    minWidth: double.infinity,
+                                    height: 44,
+                                    color: Colours.app_main,
+                                    shape: RoundedRectangleBorder(
+                                        side: BorderSide.none,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(8))),
+                                    textColor: Colors.white,
+                                    child: Text("查询详情",
+                                        style: TextStyle(fontSize: 17)),
+                                    onPressed: () {
+                                      AppNavigator.push(context,
+                                          SelecePage(address: address));
+                                    }),
+                                ...getDataView(provider.data['core']),
+                                getProgressView(provider.data)
+                              ],
+                            ))
+                      ],
+                    )),
+              ));
+        }));
+  }
+
+  Widget getProgressView(data) {
+    return Column(children: <Widget>[
+      MyTitle(
+        text: "详细数据",
+      ),
+      ProgressItem(
+        title: "案件总量排名",
+        list: data['caseNumRanking'] ?? [],
+        bgColor: Color(0x3300E9FF),
+        valueColor: Color(0xff00E9FF),
+      ),
+      ProgressItem(
+        title: "案件总金额排名",
+        list: data['amountRanking'] ?? [],
+        bgColor: Color(0x330979E8),
+        valueColor: Color(0xff0979E8),
+      )
+    ]);
+  }
+
+  List<Widget> getDataView(content) {
+    List<Widget> list = [];
+    if (content == null) return list;
+    content.forEach((data) => {
+          list.add(Column(children: <Widget>[
+            MyTitle(
+              text: "核心数据",
+            ),
+            DataItem(
+              title: "满期保费",
+              percentage: "2.12",
+              count: '${data['expire_cost']}',
+            ),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  flex: 1,
+                  child: DataItem(
+                    title: "全部损失总金额",
+                    percentage: "2.12",
+                    count: '${data['all_lost']}',
+                  ),
+                ),
+                Container(
+                  width: 19,
+                ),
+                Expanded(
+                  flex: 1,
+                  child: DataItem(
+                    title: "英大财险赔款总额",
+                    percentage: "2.12",
+                    count: '${data['yinda_lost']}',
+                  ),
+                )
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  flex: 1,
+                  child: DataItem(
+                    title: "案件数量",
+                    percentage: "2.12",
+                    count: '${data['case_num']}',
+                  ),
+                ),
+                Container(
+                  width: 19,
+                ),
+                Expanded(
+                  flex: 1,
+                  child: DataItem(
+                    title: "案均赔款",
+                    percentage: "-2.12",
+                    count: '${data['avg_cost']}',
+                  ),
+                )
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  flex: 1,
+                  child: DataItem(
+                    title: "满期赔付率",
+                    percentage: "2.12",
+                    count: '${data['expire_pay_rate']}',
+                  ),
+                ),
+                Container(
+                  width: 19,
+                ),
+                Expanded(
+                  flex: 1,
+                  child: DataItem(
+                    title: "出险报案周期",
+                    percentage: "-2.12",
+                    count: '${data['case_call_period']}',
+                  ),
+                )
+              ],
+            ),
+            DataItem(
+              title: "报案结案周期",
+              percentage: "2.12",
+              count: '${data['call_done_period']}',
+            ),
+          ]))
+        });
+    return list;
+  }
+
+  @override
+  HomePresneter createPresenter() {
+    return HomePresneter();
+  }
 
   Future<bool> _isExit() {
     if (_lastTime == null ||
@@ -38,180 +235,5 @@ class _HomeState extends State<Home> {
     }
     Toast.cancelToast();
     return Future.value(true);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider<HomeProvider>(
-        builder: (_) => provider,
-        child: WillPopScope(
-            onWillPop: _isExit,
-            child: Scaffold(
-              appBar: MyAppBar(
-                isBack: false,
-                centerTitle: "英大财险风险地图",
-              ),
-              body: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      CustomTab(
-                        margin: EdgeInsets.only(top: 10),
-                        textList: ["已决", "全部"],
-                        onTabChange: (index) {
-                          setState(() {
-                            noTab = index;
-                          });
-                        },
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 20, bottom: 10),
-                        color: Colours.material_bg,
-                        child: MapView(address: address),
-                        height: 200.0,
-                        width: double.infinity,
-                      ),
-                      Expanded(
-                          flex: 1,
-                          child: ListView(
-                            children: <Widget>[
-                              ChooseCity(
-                                chooseAddress: (chooseAddress) {
-                                  setState(() {
-                                    address = chooseAddress;
-                                  });
-                                  // setMapData(address.replaceAll('省', ''));
-                                },
-                              ),
-                              MaterialButton(
-                                  minWidth: double.infinity,
-                                  height: 44,
-                                  color: Colours.app_main,
-                                  shape: RoundedRectangleBorder(
-                                      side: BorderSide.none,
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(8))),
-                                  textColor: Colors.white,
-                                  child: Text("查询详情",
-                                      style: TextStyle(fontSize: 17)),
-                                  onPressed: () {
-                                    AppNavigator.push(
-                                        context, SelecePage(address: address));
-                                  }),
-                              getDataView(),
-                              getProgressView()
-                            ],
-                          ))
-                    ],
-                  )),
-            )));
-  }
-
-  Widget getProgressView() {
-    return Column(children: <Widget>[
-      MyTitle(
-        text: "详细数据",
-      ),
-      ProgressItem(
-        title: "案件总量排名",
-        list: [{}, {}, {}, {}],
-        bgColor: Color(0x3300E9FF),
-        valueColor: Color(0xff00E9FF),
-      ),
-      ProgressItem(
-        title: "案件总金额排名",
-        list: [{}, {}, {}, {}],
-        bgColor: Color(0x330979E8),
-        valueColor: Color(0xff0979E8),
-      )
-    ]);
-  }
-
-  Widget getDataView() {
-    return Column(children: <Widget>[
-      MyTitle(
-        text: "核心数据",
-      ),
-      DataItem(
-        title: "满期保费",
-        percentage: "2.12",
-        count: "14223",
-      ),
-      Row(
-        children: <Widget>[
-          Expanded(
-            flex: 1,
-            child: DataItem(
-              title: "全部损失总金额",
-              percentage: "2.12",
-              count: "14223",
-            ),
-          ),
-          Container(
-            width: 19,
-          ),
-          Expanded(
-            flex: 1,
-            child: DataItem(
-              title: "英大财险赔款总额",
-              percentage: "2.12",
-              count: "14223",
-            ),
-          )
-        ],
-      ),
-      Row(
-        children: <Widget>[
-          Expanded(
-            flex: 1,
-            child: DataItem(
-              title: "案件数量",
-              percentage: "2.12",
-              count: "14223",
-            ),
-          ),
-          Container(
-            width: 19,
-          ),
-          Expanded(
-            flex: 1,
-            child: DataItem(
-              title: "案均赔款",
-              percentage: "-2.12",
-              count: "14223",
-            ),
-          )
-        ],
-      ),
-      Row(
-        children: <Widget>[
-          Expanded(
-            flex: 1,
-            child: DataItem(
-              title: "满期赔付率",
-              percentage: "2.12",
-              count: "14223",
-            ),
-          ),
-          Container(
-            width: 19,
-          ),
-          Expanded(
-            flex: 1,
-            child: DataItem(
-              title: "出险报案周期",
-              percentage: "-2.12",
-              count: "14223",
-            ),
-          )
-        ],
-      ),
-      DataItem(
-        title: "报案结案周期",
-        percentage: "2.12",
-        count: "14223",
-      ),
-    ]);
   }
 }
