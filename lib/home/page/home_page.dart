@@ -1,3 +1,11 @@
+/*
+ * @Author: 首页
+ * @Date: 2019-10-11 10:50:26
+ * @LastEditTime: 2019-11-07 16:11:57
+ * @LastEditors: Please set LastEditors
+ * @Description: 修改
+ * @FilePath: /flutter_deer/lib/home/page/home_page.dart
+ */
 import 'dart:core';
 import 'dart:core' as prefix0;
 
@@ -24,10 +32,12 @@ class Home extends StatefulWidget {
   HomeState createState() => HomeState();
 }
 
-class HomeState extends BasePageState<Home, HomePresneter> {
-  HomeProvider provider = HomeProvider();
+class HomeState extends BasePageState<Home, HomePresneter, HomeProvider> {
   num noTab = 0;
   String address = 'china';
+  String province = '';
+  String city = '';
+  String county = '';
   DateTime _lastTime;
 
   @override
@@ -36,77 +46,6 @@ class HomeState extends BasePageState<Home, HomePresneter> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       presenter.getIndex(noTab);
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider<HomeProvider>(
-        builder: (_) => provider,
-        child: Consumer<HomeProvider>(builder: (_, provider, __) {
-          return WillPopScope(
-              onWillPop: _isExit,
-              child: Scaffold(
-                appBar: MyAppBar(
-                  isBack: false,
-                  centerTitle: "英大财险风险地图",
-                ),
-                body: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        CustomTab(
-                          margin: EdgeInsets.only(top: 10),
-                          textList: ["已决", "全部"],
-                          onTabChange: (index) {
-                            presenter.getIndex(index);
-                            setState(() {
-                              noTab = index;
-                            });
-                          },
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 20, bottom: 10),
-                          color: Colours.material_bg,
-                          child: MapView(address: address),
-                          height: 200.0,
-                          width: double.infinity,
-                        ),
-                        Expanded(
-                            flex: 1,
-                            child: ListView(
-                              children: <Widget>[
-                                ChooseCity(
-                                  chooseAddress: (chooseAddress) {
-                                    setState(() {
-                                      address = chooseAddress;
-                                    });
-                                    // setMapData(address.replaceAll('省', ''));
-                                  },
-                                ),
-                                MaterialButton(
-                                    minWidth: double.infinity,
-                                    height: 44,
-                                    color: Colours.app_main,
-                                    shape: RoundedRectangleBorder(
-                                        side: BorderSide.none,
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(8))),
-                                    textColor: Colors.white,
-                                    child: Text("查询详情",
-                                        style: TextStyle(fontSize: 17)),
-                                    onPressed: () {
-                                      AppNavigator.push(context,
-                                          SelecePage(address: address));
-                                    }),
-                                ...getDataView(provider.data['core']),
-                                getProgressView(provider.data)
-                              ],
-                            ))
-                      ],
-                    )),
-              ));
-        }));
   }
 
   Widget getProgressView(data) {
@@ -221,11 +160,6 @@ class HomeState extends BasePageState<Home, HomePresneter> {
     return list;
   }
 
-  @override
-  HomePresneter createPresenter() {
-    return HomePresneter();
-  }
-
   Future<bool> _isExit() {
     if (_lastTime == null ||
         DateTime.now().difference(_lastTime) > Duration(milliseconds: 2500)) {
@@ -236,4 +170,90 @@ class HomeState extends BasePageState<Home, HomePresneter> {
     Toast.cancelToast();
     return Future.value(true);
   }
+
+  @override
+  Widget bindProvide(BuildContext key, HomeProvider provider, Widget child) {
+    return WillPopScope(
+        onWillPop: _isExit,
+        child: Scaffold(
+          appBar: MyAppBar(
+            isBack: false,
+            centerTitle: "英大财险风险地图",
+          ),
+          body: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  CustomTab(
+                    margin: EdgeInsets.only(top: 10),
+                    textList: ["已决", "全部"],
+                    onTabChange: (index) async {
+                      noTab = index;
+                      presenter.getIndex(noTab,
+                          province: province, city: city, county: county);
+                      setState(() {});
+                    },
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 20, bottom: 10),
+                    color: Colours.material_bg,
+                    child: MapView(address: address),
+                    height: 200.0,
+                    width: double.infinity,
+                  ),
+                  Expanded(
+                      flex: 1,
+                      child: ListView(
+                        children: <Widget>[
+                          ChooseCity(
+                            chooseAddress: (chooseAddress, backProvince,
+                                backCity, backCounty) async {
+                              address = chooseAddress;
+                              city = backCity;
+                              province = backProvince;
+                              county = backCounty;
+                              await presenter.getIndex(noTab,
+                                  province: province,
+                                  city: city,
+                                  county: county);
+                              if (county.isEmpty) {
+                                setState(() {});
+                              }
+                            },
+                          ),
+                          MaterialButton(
+                              minWidth: double.infinity,
+                              height: 44,
+                              color: Colours.app_main,
+                              shape: RoundedRectangleBorder(
+                                  side: BorderSide.none,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(8))),
+                              textColor: Colors.white,
+                              child:
+                                  Text("查询详情", style: TextStyle(fontSize: 17)),
+                              onPressed: () {
+                                AppNavigator.push(
+                                    context,
+                                    SelecePage(
+                                        address: address,
+                                        province: province,
+                                        city: city,
+                                        county: county));
+                              }),
+                          ...getDataView(provider.data['core']),
+                          getProgressView(provider.data)
+                        ],
+                      ))
+                ],
+              )),
+        ));
+  }
+
+  @override
+  HomeProvider createProvider() => HomeProvider();
+
+  @override
+  HomePresneter createPresenter() => HomePresneter();
 }

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_deer/res/colors.dart';
 import 'package:flutter_deer/res/resources.dart';
-import 'package:flutter_deer/util/date_utils.dart';
 
 class CommentItem extends StatefulWidget {
   CommentItem(
@@ -11,12 +10,14 @@ class CommentItem extends StatefulWidget {
       @required this.title,
       this.onChooseList,
       this.values,
+      this.onInputChange,
       @required this.hint,
       this.isInput = false,
       this.showLine = true})
       : super();
   final Function onChooseTime;
   final Function onChooseList;
+  final Function(String) onInputChange;
   final List<String> values;
   final String title;
   final bool showLine;
@@ -58,6 +59,7 @@ class CommentItemState extends State<CommentItem> {
                             autofocus: false,
                             style: TextStyle(color: Colors.white, fontSize: 16),
                             // controller: widget.controller,
+                            onChanged: widget.onInputChange,
                             textInputAction: TextInputAction.done,
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
@@ -156,7 +158,7 @@ class CommentItemState extends State<CommentItem> {
       setState(() {
         showText = "${date.year}年${date.month}月${date.day}日";
       });
-      widget.onChooseTime(date);
+      widget.onChooseTime(date.toString().split(" ")[0]);
     },
         currentTime: DateTime(
             DateTime.now().year, DateTime.now().month, DateTime.now().day),

@@ -6,9 +6,12 @@ import 'package:flutter_deer/net/dio_utils.dart';
 import 'package:flutter_deer/net/net.dart';
 
 class HomePresneter extends BasePagePresenter<HomeState> {
-  getIndex(num noTab) async {
+  getIndex(num noTab, {province = '', city = '', county = ''}) async {
     HashMap<String, dynamic> params = HashMap();
     params['type'] = noTab == 0 ? '已决' : '已决未决';
+    params['province'] = province;
+    params['city'] = city;
+    params['county'] = county;
     asyncRequestNetwork<Map<dynamic, dynamic>>(Method.post,
         url: HttpApi.mobileTerminalIndex,
         isShow: true,

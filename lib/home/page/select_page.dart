@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_deer/home/home_router.dart';
+import 'package:flutter_deer/home/models/select_model.dart';
+import 'package:flutter_deer/home/page/home_detail.dart';
 import 'package:flutter_deer/res/colors.dart';
 import 'package:flutter_deer/res/gaps.dart';
 import 'package:flutter_deer/res/styles.dart';
-import 'package:flutter_deer/routers/fluro_navigator.dart';
+import 'package:flutter_deer/util/app_navigator.dart';
 import 'package:flutter_deer/widgets/app_bar.dart';
 import 'package:flutter_deer/widgets/custom_tab.dart';
 import 'package:flutter_deer/widgets/item_time_picker.dart';
@@ -15,14 +16,27 @@ import 'package:flutter_svg/flutter_svg.dart';
  * 查询条件页面
  */
 class SelecePage extends StatefulWidget {
-  SelecePage({this.address}) : super();
+  SelecePage({this.address, this.province, this.city, this.county}) : super();
   final String address;
+  final String province;
+  final String city;
+  final String county;
   @override
   SelecePageState createState() => SelecePageState();
 }
 
 class SelecePageState extends State<SelecePage> {
-  var checkTab = 0;
+  SelectModel selectModel = SelectModel();
+  int checkTab = 0;
+  @override
+  void initState() {
+    super.initState();
+    selectModel.province = widget.province;
+    selectModel.city = widget.city;
+    selectModel.county = widget.county;
+    selectModel.type = '已决';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,6 +49,7 @@ class SelecePageState extends State<SelecePage> {
                 margin: EdgeInsets.only(top: 0, bottom: 16),
                 textList: ['已决', '全部'],
                 onTabChange: (index) {
+                  selectModel.type = index == 0 ? '已决' : '已决未决';
                   setState(() {
                     checkTab = index;
                   });
@@ -61,11 +76,19 @@ class SelecePageState extends State<SelecePage> {
                         )
                       ],
                     ),
-                    CommentItem(title: '保单号', hint: '填写保单号', isInput: true),
                     CommentItem(
-                        title: '起保日期', hint: '日期选择', onChooseTime: (date) {}),
+                        title: '保单号',
+                        hint: '填写保单号',
+                        isInput: true,
+                        onInputChange: (v) => selectModel.policyNo = v),
                     CommentItem(
-                        title: '终保日期', hint: '日期选择', onChooseTime: (date) {}),
+                        title: '起保日期',
+                        hint: '日期选择',
+                        onChooseTime: (date) => selectModel.startDate = date),
+                    CommentItem(
+                        title: '终保日期',
+                        hint: '日期选择',
+                        onChooseTime: (date) => selectModel.endDate = date),
                     Visibility(
                       visible: checkTab == 0,
                       child: Column(
@@ -94,9 +117,14 @@ class SelecePageState extends State<SelecePage> {
                         onChooseList: (value) {},
                         values: ['选择一', '选择2']),
                     CommentItem(
-                        title: '出险日期', hint: '日期选择', onChooseTime: (date) {}),
+                        title: '出险日期',
+                        hint: '日期选择',
+                        onChooseTime: (date) => selectModel.damageTime = date),
                     CommentItem(
-                        title: '报案日期', hint: '日期选择', onChooseTime: (date) {}),
+                        title: '报案日期',
+                        hint: '日期选择',
+                        onChooseTime: (date) =>
+                            selectModel.reportStartTime = date),
                     Visibility(
                       visible: checkTab == 0,
                       child: Column(
@@ -104,7 +132,8 @@ class SelecePageState extends State<SelecePage> {
                           CommentItem(
                               title: '结案日期',
                               hint: '日期选择',
-                              onChooseTime: (date) {}),
+                              onChooseTime: (date) =>
+                                  selectModel.endCaseTime = date),
                           CommentItem(
                               title: '案件状态',
                               hint: '请选择',
@@ -129,7 +158,8 @@ class SelecePageState extends State<SelecePage> {
                     MyButton(
                       text: '查询详情',
                       onPressed: () {
-                        NavigatorUtils.push(context, HomeRouter.homeDetail);
+                        AppNavigator.push(
+                            context, HomeDetailPage(selectModel: selectModel));
                       },
                     )
                   ],

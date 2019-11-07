@@ -5,7 +5,7 @@ import 'package:flutter_deer/util/city_enum.dart';
 import 'package:flutter_deer/util/toast.dart';
 
 class ChooseCity extends StatefulWidget {
-  final Function(String) chooseAddress;
+  final Function(String, String, String, String) chooseAddress;
 
   ChooseCity({@required this.chooseAddress});
   @override
@@ -62,18 +62,21 @@ class _ChooseCity extends State<ChooseCity> {
               cResult = null;
               aResult = null;
             });
-            widget.chooseAddress(pResult.provinceName);
+            widget.chooseAddress(
+                pResult.provinceName, pResult.provinceName, '', '');
           } else if (address == CityEnum.C) {
             setState(() {
               cResult = result;
               aResult = null;
             });
-            widget.chooseAddress(cResult.cityName);
+            widget.chooseAddress(
+                cResult.cityName, pResult.provinceName, cResult.cityName, '');
           } else {
             setState(() {
               aResult = result;
             });
-            // widget.chooseAddress(aResult.areaName);
+            widget.chooseAddress(aResult.areaName, pResult.provinceName,
+                cResult.cityName, aResult.areaName);
           }
         },
         child: Container(
