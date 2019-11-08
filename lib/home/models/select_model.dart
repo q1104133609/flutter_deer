@@ -1,4 +1,5 @@
 class SelectModel {
+  String _address;
   String _province;
   String _city;
   String _county;
@@ -19,6 +20,7 @@ class SelectModel {
 
   SelectModel(
       {String province,
+      String address,
       String city,
       String county,
       String type,
@@ -84,6 +86,8 @@ class SelectModel {
       _reportStartTime = reportStartTime;
   String get endCaseTime => _endCaseTime;
   set endCaseTime(String endCaseTime) => _endCaseTime = endCaseTime;
+  String get address => _address;
+  set address(String address) => _address = address;
   String get caseStatus => _caseStatus;
   set caseStatus(String caseStatus) => _caseStatus = caseStatus;
   String get damageReasonDesc => _damageReasonDesc;

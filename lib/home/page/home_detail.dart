@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_deer/common/common.dart';
 import 'package:flutter_deer/home/models/select_model.dart';
 import 'package:flutter_deer/home/presenter/home_detial_presenter.dart';
 import 'package:flutter_deer/home/provider/home_detail_provider.dart';
@@ -37,14 +38,16 @@ class HomeDetailState extends BasePageState<HomeDetailPage, HomeDetailPresenter,
   @override
   Widget bindProvide(BuildContext key, provider, Widget child) {
     return Scaffold(
-        appBar: MyAppBar(centerTitle: '内部-全部-非保单'),
+        appBar: MyAppBar(
+            centerTitle:
+                '${Constant.INSIDE_OUTSIDE == 0 ? '内部' : '外部'}-${widget.selectModel.type == '已决未决' ? '全部' : '已决'}-${widget.selectModel.policyNo != null ? '保单' : '非保单'}'),
         body: Padding(
           padding: EdgeInsets.all(10),
           child: Column(children: <Widget>[
             Container(
               margin: EdgeInsets.only(top: 20),
               color: Colours.material_bg,
-              child: MapView(),
+              child: MapView(address: widget.selectModel.address),
               height: 200.0,
               width: double.infinity,
             ),
@@ -56,10 +59,13 @@ class HomeDetailState extends BasePageState<HomeDetailPage, HomeDetailPresenter,
                   MyTitle(
                     text: "详细数据",
                   ),
-                  ...getItemView(provider.data['core']),
-                  DetailDataFrom(),
-                  Gaps.vGap16,
-                  DetailDataFrom(),
+                  ...(widget.selectModel.policyNo != null
+                      ? [
+                          DetailDataFrom(),
+                          Gaps.vGap16,
+                          DetailDataFrom(),
+                        ]
+                      : getItemView(provider.data['core']))
                 ],
               ),
             ),
@@ -77,10 +83,13 @@ class HomeDetailState extends BasePageState<HomeDetailPage, HomeDetailPresenter,
           MyTitle(
             text: "核心数据",
           ),
-          DataItem(
-            title: "满期保费",
-            percentage: "2.12",
-            count: '${v['expire_cost']}',
+          Visibility(
+            visible: widget.selectModel.type == '已决未决',
+            child: DataItem(
+              title: "满期保费",
+              percentage: "2.12",
+              count: '${v['expire_cost']}',
+            ),
           ),
           Row(
             children: <Widget>[

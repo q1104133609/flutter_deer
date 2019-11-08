@@ -22,15 +22,15 @@ class MapViewState extends State<MapView> {
   @override
   void didUpdateWidget(MapView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if(oldWidget.address != widget.address){
-      setMapData(widget.address.replaceAll("省", ""));
+    if (oldWidget.address != widget.address) {
+      setMapData(widget.address.replaceAll('省', ''));
     }
   }
 
   void setMapData(String address) {
-    String mapJson = "";
-    if (address == "china") {
-      mapJson = address;
+    String mapJson = '';
+    if (address == 'china' || address == '全国') {
+      mapJson = 'china';
     } else if (Map.cityList.containsKey(address)) {
       mapJson = 'city/${Map.cityList[address]}';
     } else if (Map.provinceList.containsKey(address)) {
@@ -38,7 +38,7 @@ class MapViewState extends State<MapView> {
     }
     rootBundle.loadString('assets/map/$mapJson.json').then((value) {
       _controller
-          .evaluateJavascript('setValue("$mapJson",$value)')
+          .evaluateJavascript("setValue('$mapJson',$value)")
           .then((result) {});
     });
   }
@@ -63,7 +63,7 @@ class MapViewState extends State<MapView> {
               },
             );
           } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
+            return Text('${snapshot.error}');
           }
           return CircularProgressIndicator();
         });

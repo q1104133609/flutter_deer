@@ -1,7 +1,7 @@
 /*
  * @Author: 首页
  * @Date: 2019-10-11 10:50:26
- * @LastEditTime: 2019-11-08 13:23:25
+ * @LastEditTime: 2019-11-08 15:13:37
  * @LastEditors: Please set LastEditors
  * @Description: 修改
  * @FilePath: /flutter_deer/lib/home/page/home_page.dart
@@ -33,7 +33,7 @@ class Home extends StatefulWidget {
 
 class HomeState extends BasePageState<Home, HomePresneter, HomeProvider> {
   num noTab = 0;
-  String address = 'china';
+  String address = '全国';
   String province = '';
   String city = '';
   String county = '';

@@ -32,6 +32,7 @@ class SelecePageState extends State<SelecePage> {
   void initState() {
     super.initState();
     selectModel.province = widget.province;
+    selectModel.address = widget.address;
     selectModel.city = widget.city;
     selectModel.county = widget.county;
     selectModel.type = '已决';
