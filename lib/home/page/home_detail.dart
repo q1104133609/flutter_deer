@@ -24,99 +24,9 @@ class HomeDetailState extends BasePageState<HomeDetailPage, HomeDetailPresenter,
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {});
-  }
-
-  List<Widget> getItemView() {
-    var i = List(10);
-    return i.map((v) => DetailDataItem()).toList();
-  }
-
-  Widget getDataView() {
-    return Column(children: <Widget>[
-      MyTitle(
-        text: "核心数据",
-      ),
-      DataItem(
-        title: "满期保费",
-        percentage: "2.12",
-        count: "14223",
-      ),
-      Row(
-        children: <Widget>[
-          Expanded(
-            flex: 1,
-            child: DataItem(
-              title: "全部损失总金额",
-              percentage: "2.12",
-              count: "14223",
-            ),
-          ),
-          Container(
-            width: 19,
-          ),
-          Expanded(
-            flex: 1,
-            child: DataItem(
-              title: "英大财险赔款总额",
-              percentage: "2.12",
-              count: "14223",
-            ),
-          )
-        ],
-      ),
-      Row(
-        children: <Widget>[
-          Expanded(
-            flex: 1,
-            child: DataItem(
-              title: "案件数量",
-              percentage: "2.12",
-              count: "14223",
-            ),
-          ),
-          Container(
-            width: 19,
-          ),
-          Expanded(
-            flex: 1,
-            child: DataItem(
-              title: "案均赔款",
-              percentage: "-2.12",
-              count: "14223",
-            ),
-          )
-        ],
-      ),
-      Row(
-        children: <Widget>[
-          Expanded(
-            flex: 1,
-            child: DataItem(
-              title: "满期赔付率",
-              percentage: "2.12",
-              count: "14223",
-            ),
-          ),
-          Container(
-            width: 19,
-          ),
-          Expanded(
-            flex: 1,
-            child: DataItem(
-              title: "出险报案周期",
-              percentage: "-2.12",
-              count: "14223",
-            ),
-          )
-        ],
-      ),
-      DataItem(
-        title: "报案结案周期",
-        percentage: "2.12",
-        count: "14223",
-      ),
-    ]);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      presenter.mobileTerminalQuery(widget.selectModel);
+    });
   }
 
   @override
@@ -142,11 +52,11 @@ class HomeDetailState extends BasePageState<HomeDetailPage, HomeDetailPresenter,
               flex: 1,
               child: ListView(
                 children: <Widget>[
-                  getDataView(),
+                  ...getDataView(provider.data['detail']),
                   MyTitle(
                     text: "详细数据",
                   ),
-                  ...getItemView(),
+                  ...getItemView(provider.data['core']),
                   DetailDataFrom(),
                   Gaps.vGap16,
                   DetailDataFrom(),
@@ -158,5 +68,102 @@ class HomeDetailState extends BasePageState<HomeDetailPage, HomeDetailPresenter,
   }
 
   @override
-  createProvider() => HomeDetailProvider();
+  HomeDetailProvider createProvider() => HomeDetailProvider();
+
+  List<Widget> getDataView(data) {
+    if (data == null) return [];
+    List<Widget> list = [];
+    data.forEach((v) => list.add(Column(children: <Widget>[
+          MyTitle(
+            text: "核心数据",
+          ),
+          DataItem(
+            title: "满期保费",
+            percentage: "2.12",
+            count: '${v['expire_cost']}',
+          ),
+          Row(
+            children: <Widget>[
+              Expanded(
+                flex: 1,
+                child: DataItem(
+                  title: "全部损失总金额",
+                  percentage: "2.12",
+                  count: '${v['expire_cost']}',
+                ),
+              ),
+              Container(
+                width: 19,
+              ),
+              Expanded(
+                flex: 1,
+                child: DataItem(
+                  title: "英大财险赔款总额",
+                  percentage: "2.12",
+                  count: '${v['yinda_lost']}',
+                ),
+              )
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Expanded(
+                flex: 1,
+                child: DataItem(
+                  title: "案件数量",
+                  percentage: "2.12",
+                  count: '${v['case_num']}',
+                ),
+              ),
+              Container(
+                width: 19,
+              ),
+              Expanded(
+                flex: 1,
+                child: DataItem(
+                  title: "案均赔款",
+                  percentage: "-2.12",
+                  count: '${v['avg_cost']}',
+                ),
+              )
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Expanded(
+                flex: 1,
+                child: DataItem(
+                  title: "满期赔付率",
+                  percentage: "2.12",
+                  count: '${v['expire_pay_rate']}',
+                ),
+              ),
+              Container(
+                width: 19,
+              ),
+              Expanded(
+                flex: 1,
+                child: DataItem(
+                  title: "出险报案周期",
+                  percentage: "-2.12",
+                  count: '${v['case_call_period']}',
+                ),
+              )
+            ],
+          ),
+          DataItem(
+            title: "报案结案周期",
+            percentage: "2.12",
+            count: '${v['call_done_period']}',
+          ),
+        ])));
+    return list;
+  }
+
+  List<Widget> getItemView(data) {
+    if (data == null) return [];
+    List<Widget> list = [];
+    data.forEach((v) => list.add(DetailDataItem(v)));
+    return list;
+  }
 }

@@ -7,10 +7,12 @@ class DetailItemProgress extends StatelessWidget {
   DetailItemProgress(
       {@required this.title,
       @required this.percentage,
-      @required this.progressColor})
+      @required this.progressColor,
+      @required this.count})
       : super();
   final String title;
   final String percentage;
+  final String count;
   final Color progressColor;
   @override
   Widget build(BuildContext context) {
@@ -51,7 +53,7 @@ class DetailItemProgress extends StatelessWidget {
             )),
         MyProgressView(
             percentage: 50,
-            count: "413",
+            count: count == 'null' ? '-' : count,
             bgColor: valueColor,
             top: 10,
             progressHorizontal: EdgeInsets.only(right: 50),
